@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.wixproj'">
+    <PublishDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)artifacts\publish\win-x64\'))</PublishDir>
+  </PropertyGroup>
+</Project>

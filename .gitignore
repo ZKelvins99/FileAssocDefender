@@ -1,0 +1,92 @@
+# --- Build outputs ---
+*.exe
+*.dll
+!artifacts/**/*.exe
+*.so
+*.dylib
+*.pdb
+*.ilk
+*.obj
+*.o
+*.a
+*.lib
+*.exp
+# Keep app.manifest tracked
+!**/app.manifest
+*.res
+*.tlb
+
+# --- .NET publish / artifacts ---
+artifacts/
+publish/
+TestResults/
+*.nupkg
+
+# --- Visual Studio ---
+.vs/
+bin/
+obj/
+out/
+build/
+dist/
+packages/
+*.user
+*.suo
+*.sln.docstates
+*.vcxproj.filters
+*.vcxproj.user
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.eggs/
+venv/
+.venv/
+env/
+*.whl
+dist/
+
+# --- Node / JS ---
+node_modules/
+npm-debug.log*
+
+# --- OS generated ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+.BIN/
+
+# --- IDE ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
+
+# --- Logs ---
+*.log
+
+# --- Config / secrets ---
+.env
+.env.local
+*.private.config
+
+# --- Temp files ---
+*.tmp
+*.temp
+*.cache
