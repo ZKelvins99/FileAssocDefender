@@ -7,7 +7,7 @@ public sealed class Guardian : IDisposable
     private readonly AssociationScanner _scanner;
     private readonly AssociationFixer _fixer;
     private readonly LogService _logService;
-    private Timer? _timer;
+    private System.Threading.Timer? _timer;
     private bool _autoRepair;
 
     public event Action<IReadOnlyList<AssociationInfo>>? ScanCompleted;
