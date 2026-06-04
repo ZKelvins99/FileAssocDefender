@@ -8,17 +8,20 @@ public sealed class AssociationFixer
     private readonly RegistryHelper _registryHelper;
     private readonly PresetStore _presetStore;
     private readonly LogService _logService;
+    private readonly WpsGuardService _wpsGuardService;
 
     public AssociationFixer(
         AssociationApi associationApi,
         RegistryHelper registryHelper,
         PresetStore presetStore,
-        LogService logService)
+        LogService logService,
+        WpsGuardService wpsGuardService)
     {
         _associationApi = associationApi;
         _registryHelper = registryHelper;
         _presetStore = presetStore;
         _logService = logService;
+        _wpsGuardService = wpsGuardService;
     }
 
     public FixResult Fix(AssociationInfo item)
@@ -49,6 +52,12 @@ public sealed class AssociationFixer
         var hijackProgIds = _presetStore.LoadHijackSignatures().ProgIds
             .Where(p => !string.Equals(p, item.TargetProgId, StringComparison.OrdinalIgnoreCase))
             .ToList();
+
+        var stopped = _wpsGuardService.TryStopGuardProcesses();
+        if (stopped > 0)
+        {
+            _logService.Info($"已终止 {stopped} 个 WPS 守护相关进程");
+        }
 
         if (_associationApi.TrySetDefault(item.Extension, item.TargetProgId)
             || _registryHelper.TryRepairViaRegistry(item.Extension, item.TargetProgId, hijackProgIds))

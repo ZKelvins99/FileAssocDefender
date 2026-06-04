@@ -9,6 +9,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddFileAssocDefenderServices(this IServiceCollection services)
     {
         services.AddSingleton<AppSettingsService>();
+        services.AddSingleton<StartupRegistrationService>();
+        services.AddSingleton<WpsGuardService>();
         services.AddSingleton<RegistryHelper>();
         services.AddSingleton<IconResolver>();
         services.AddSingleton<OfficeDetector>();

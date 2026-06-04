@@ -14,8 +14,14 @@ public sealed class AppSettingsService
 
     private readonly string _settingsPath;
 
-    public AppSettingsService()
+    public AppSettingsService(string? settingsPath = null)
     {
+        if (!string.IsNullOrWhiteSpace(settingsPath))
+        {
+            _settingsPath = settingsPath!;
+            return;
+        }
+
         var folder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "FileAssocDefender");
