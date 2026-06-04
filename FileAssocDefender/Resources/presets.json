@@ -1,0 +1,44 @@
+[
+  {
+    "extension": ".docx",
+    "progId": "Word.Document.12",
+    "displayName": "Word 文档",
+    "category": "Word",
+    "expectedExePattern": "*WINWORD.EXE"
+  },
+  {
+    "extension": ".doc",
+    "progId": "Word.Document.8",
+    "displayName": "Word 97-2003 文档",
+    "category": "Word",
+    "expectedExePattern": "*WINWORD.EXE"
+  },
+  {
+    "extension": ".xlsx",
+    "progId": "Excel.Sheet.12",
+    "displayName": "Excel 工作簿",
+    "category": "Excel",
+    "expectedExePattern": "*EXCEL.EXE"
+  },
+  {
+    "extension": ".xls",
+    "progId": "Excel.Sheet.8",
+    "displayName": "Excel 97-2003 工作簿",
+    "category": "Excel",
+    "expectedExePattern": "*EXCEL.EXE"
+  },
+  {
+    "extension": ".pptx",
+    "progId": "PowerPoint.Show.12",
+    "displayName": "PowerPoint 演示文稿",
+    "category": "PowerPoint",
+    "expectedExePattern": "*POWERPNT.EXE"
+  },
+  {
+    "extension": ".ppt",
+    "progId": "PowerPoint.Show.8",
+    "displayName": "PowerPoint 97-2003 演示文稿",
+    "category": "PowerPoint",
+    "expectedExePattern": "*POWERPNT.EXE"
+  }
+]

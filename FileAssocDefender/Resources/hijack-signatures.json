@@ -1,0 +1,19 @@
+{
+  "progIds": [
+    "KWPS.Document.12",
+    "KWPS.Spreadsheet.12",
+    "KWPS.Presentation.12",
+    "WPS.Document.12",
+    "WPS.Spreadsheet.12",
+    "WPS.Presentation.12",
+    "Kingsoft.WPS.Document",
+    "Kingsoft.WPS.Spreadsheet",
+    "Kingsoft.WPS.Presentation"
+  ],
+  "exePatterns": [
+    "*\\WPS Office\\*\\wps.exe",
+    "*\\Kingsoft\\WPS Office\\*\\wps.exe",
+    "*\\WPS Office\\*\\et.exe",
+    "*\\WPS Office\\*\\wpp.exe"
+  ]
+}

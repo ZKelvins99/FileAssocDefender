@@ -1,0 +1,79 @@
+﻿<ui:FluentWindow x:Class="FileAssocDefender.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:views="clr-namespace:FileAssocDefender.Views"
+                 Title="FileAssocDefender"
+                 Width="1100"
+                 Height="760"
+                 MinWidth="960"
+                 MinHeight="640"
+                 WindowStartupLocation="CenterScreen"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <ui:NavigationView Grid.Column="0"
+                           Width="220"
+                           PaneDisplayMode="Left"
+                           IsBackButtonVisible="Collapsed"
+                           IsPaneToggleVisible="False">
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="关联总览"
+                                       Icon="{ui:SymbolIcon Home24}"
+                                       Command="{Binding NavigateToOverviewCommand}" />
+                <ui:NavigationViewItem Content="日志"
+                                       Icon="{ui:SymbolIcon DocumentBulletList24}"
+                                       Command="{Binding NavigateToLogsCommand}" />
+                <ui:NavigationViewItem Content="设置"
+                                       Icon="{ui:SymbolIcon Settings24}"
+                                       Command="{Binding NavigateToSettingsCommand}" />
+            </ui:NavigationView.MenuItems>
+        </ui:NavigationView>
+
+        <Grid Grid.Column="1">
+            <views:AssociationListView DataContext="{Binding AssociationList}">
+                <views:AssociationListView.Style>
+                    <Style TargetType="views:AssociationListView">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedPageIndex}" Value="0">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </views:AssociationListView.Style>
+            </views:AssociationListView>
+
+            <views:LogView DataContext="{Binding Log}">
+                <views:LogView.Style>
+                    <Style TargetType="views:LogView">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedPageIndex}" Value="1">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </views:LogView.Style>
+            </views:LogView>
+
+            <views:SettingsView DataContext="{Binding Settings}">
+                <views:SettingsView.Style>
+                    <Style TargetType="views:SettingsView">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedPageIndex}" Value="2">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </views:SettingsView.Style>
+            </views:SettingsView>
+        </Grid>
+    </Grid>
+</ui:FluentWindow>
