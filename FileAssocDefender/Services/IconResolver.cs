@@ -7,8 +7,20 @@ namespace FileAssocDefender.Services;
 
 public sealed class IconResolver
 {
-    private readonly RegistryHelper _registryHelper = new();
-    private readonly Dictionary<string, ImageSource?> _cache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly RegistryHelper _registryHelper;
+    private readonly Dictionary<string, ImageSource?> _iconCache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, string> _nameCache = new(StringComparer.OrdinalIgnoreCase);
+
+    public IconResolver(RegistryHelper registryHelper)
+    {
+        _registryHelper = registryHelper;
+    }
+
+    public void ClearCache()
+    {
+        _iconCache.Clear();
+        _nameCache.Clear();
+    }
 
     public ImageSource? GetIconFromExe(string exePath, int size = 32)
     {
@@ -18,13 +30,13 @@ public sealed class IconResolver
         }
 
         var cacheKey = $"exe:{exePath}:{size}";
-        if (_cache.TryGetValue(cacheKey, out var cached))
+        if (_iconCache.TryGetValue(cacheKey, out var cached))
         {
             return cached;
         }
 
         var icon = ShellIconHelper.GetIconFromPath(exePath, size);
-        _cache[cacheKey] = icon;
+        _iconCache[cacheKey] = icon;
         return icon;
     }
 
@@ -36,7 +48,7 @@ public sealed class IconResolver
         }
 
         var cacheKey = $"prog:{progId}:{size}";
-        if (_cache.TryGetValue(cacheKey, out var cached))
+        if (_iconCache.TryGetValue(cacheKey, out var cached))
         {
             return cached;
         }
@@ -45,18 +57,31 @@ public sealed class IconResolver
         if (!string.IsNullOrWhiteSpace(iconPath) && File.Exists(iconPath))
         {
             var icon = ShellIconHelper.GetIconFromPath(iconPath, size);
-            _cache[cacheKey] = icon;
+            _iconCache[cacheKey] = icon;
             return icon;
         }
 
         var command = _registryHelper.ResolveCommand(progId);
         var exePath = _registryHelper.ResolveExePath(command);
         var fallback = GetIconFromExe(exePath, size);
-        _cache[cacheKey] = fallback;
+        _iconCache[cacheKey] = fallback;
         return fallback;
     }
 
     public string GetFriendlyName(string exePath, string progId)
+    {
+        var cacheKey = $"{exePath}|{progId}";
+        if (_nameCache.TryGetValue(cacheKey, out var cached))
+        {
+            return cached;
+        }
+
+        var name = ResolveFriendlyName(exePath, progId);
+        _nameCache[cacheKey] = name;
+        return name;
+    }
+
+    private static string ResolveFriendlyName(string exePath, string progId)
     {
         if (!string.IsNullOrWhiteSpace(exePath) && File.Exists(exePath))
         {

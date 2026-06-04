@@ -53,6 +53,7 @@ public sealed class AssociationFixer
         if (_associationApi.TrySetDefault(item.Extension, item.TargetProgId)
             || _registryHelper.TryRepairViaRegistry(item.Extension, item.TargetProgId, hijackProgIds))
         {
+            _registryHelper.InvalidateCache();
             _logService.AssociationChanged(
                 item.Extension,
                 item.CurrentAppName,

@@ -7,10 +7,25 @@ namespace FileAssocDefender.Services;
 
 public sealed class RegistryHelper
 {
+    private readonly Dictionary<string, AssociationRaw> _associationCache = new(StringComparer.OrdinalIgnoreCase);
+
+    public void InvalidateCache() => _associationCache.Clear();
+
     public AssociationRaw GetAssociation(string extension)
     {
         var normalized = NormalizeExtension(extension);
+        if (_associationCache.TryGetValue(normalized, out var cached))
+        {
+            return cached;
+        }
 
+        var raw = ReadAssociation(normalized);
+        _associationCache[normalized] = raw;
+        return raw;
+    }
+
+    private AssociationRaw ReadAssociation(string normalized)
+    {
         var userChoice = ReadProgId($@"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\{normalized}\UserChoice", "ProgId");
         if (!string.IsNullOrWhiteSpace(userChoice))
         {
@@ -166,14 +181,19 @@ public sealed class RegistryHelper
         }
 
         TryClearUserChoice(normalized);
-        return SetHkcuDefault(normalized, progId);
+        var success = SetHkcuDefault(normalized, progId);
+        if (success)
+        {
+            InvalidateCache();
+        }
+
+        return success;
     }
 
-    private static AssociationRaw BuildRaw(string extension, string progId, AssociationSource source)
+    private AssociationRaw BuildRaw(string extension, string progId, AssociationSource source)
     {
-        var helper = new RegistryHelper();
-        var command = helper.ResolveCommand(progId);
-        var exePath = helper.ResolveExePath(command);
+        var command = ResolveCommand(progId);
+        var exePath = ResolveExePath(command);
 
         return new AssociationRaw
         {

@@ -10,9 +10,10 @@ public class AssociationScannerTests
         var presetStore = new PresetStore();
         presetStore.Load();
 
+        var registryHelper = new RegistryHelper();
         var scanner = new AssociationScanner(
-            new RegistryHelper(),
-            new IconResolver(),
+            registryHelper,
+            new IconResolver(registryHelper),
             new OfficeDetector(),
             presetStore);
 
