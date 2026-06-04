@@ -26,12 +26,13 @@ FileAssocDefender/
 
 ## 快速开始
 
-### 开发构建
+### 开发运行（需管理员）
 
 ```powershell
-dotnet build FileAssocDefender/FileAssocDefender.csproj
 dotnet run --project FileAssocDefender/FileAssocDefender.csproj
 ```
+
+首次启动会显示引导页（Office 检测 + UAC 说明），可在 `%AppData%\FileAssocDefender\settings.json` 重置 `HasCompletedWelcome` 再次查看。
 
 ### 发布 EXE + MSI
 
