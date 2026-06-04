@@ -73,6 +73,102 @@ public sealed class RegistryHelper
         return ExpandRegistryPath(value.Split(',')[0]);
     }
 
+    public IReadOnlyList<string> GetOpenWithProgIds(string extension)
+    {
+        var normalized = NormalizeExtension(extension);
+        using var key = Registry.CurrentUser.OpenSubKey($@"Software\Classes\{normalized}\OpenWithProgids");
+        if (key is null)
+        {
+            return [];
+        }
+
+        return key.GetValueNames()
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .ToList();
+    }
+
+    public AssociationBackup BackupAssociation(string extension)
+    {
+        var raw = GetAssociation(extension);
+        var normalized = NormalizeExtension(extension);
+        var hash = ReadProgId(
+            $@"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\{normalized}\UserChoice",
+            "Hash");
+
+        return new AssociationBackup
+        {
+            Extension = normalized,
+            ProgId = raw.ProgId,
+            Hash = hash,
+            Source = raw.Source
+        };
+    }
+
+    public bool SetHkcuDefault(string extension, string progId)
+    {
+        try
+        {
+            var normalized = NormalizeExtension(extension);
+            using var key = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{normalized}", true);
+            key.SetValue(null, progId);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool RemoveOpenWithProgId(string extension, string progId)
+    {
+        try
+        {
+            var normalized = NormalizeExtension(extension);
+            using var key = Registry.CurrentUser.OpenSubKey(
+                $@"Software\Classes\{normalized}\OpenWithProgids",
+                writable: true);
+
+            if (key is null)
+            {
+                return true;
+            }
+
+            key.DeleteValue(progId, throwOnMissingValue: false);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool TryClearUserChoice(string extension)
+    {
+        try
+        {
+            var normalized = NormalizeExtension(extension);
+            var path = $@"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\{normalized}\UserChoice";
+            Registry.CurrentUser.DeleteSubKeyTree(path, throwOnMissingSubKey: false);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool TryRepairViaRegistry(string extension, string progId, IEnumerable<string> progIdsToRemove)
+    {
+        var normalized = NormalizeExtension(extension);
+        foreach (var hijackProgId in progIdsToRemove)
+        {
+            RemoveOpenWithProgId(normalized, hijackProgId);
+        }
+
+        TryClearUserChoice(normalized);
+        return SetHkcuDefault(normalized, progId);
+    }
+
     private static AssociationRaw BuildRaw(string extension, string progId, AssociationSource source)
     {
         var helper = new RegistryHelper();
