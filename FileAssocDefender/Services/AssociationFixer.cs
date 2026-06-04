@@ -5,11 +5,19 @@ namespace FileAssocDefender.Services;
 public sealed class AssociationFixer
 {
     private readonly AssociationApi _associationApi;
+    private readonly RegistryHelper _registryHelper;
+    private readonly PresetStore _presetStore;
     private readonly LogService _logService;
 
-    public AssociationFixer(AssociationApi associationApi, LogService logService)
+    public AssociationFixer(
+        AssociationApi associationApi,
+        RegistryHelper registryHelper,
+        PresetStore presetStore,
+        LogService logService)
     {
         _associationApi = associationApi;
+        _registryHelper = registryHelper;
+        _presetStore = presetStore;
         _logService = logService;
     }
 
@@ -35,28 +43,35 @@ public sealed class AssociationFixer
             };
         }
 
-        var success = _associationApi.TrySetDefault(item.Extension, item.TargetProgId);
-        if (!success)
+        var backup = _registryHelper.BackupAssociation(item.Extension);
+        _logService.Info($"已备份 {item.Extension} 关联: {backup.ProgId}");
+
+        var hijackProgIds = _presetStore.LoadHijackSignatures().ProgIds
+            .Where(p => !string.Equals(p, item.TargetProgId, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        if (_associationApi.TrySetDefault(item.Extension, item.TargetProgId)
+            || _registryHelper.TryRepairViaRegistry(item.Extension, item.TargetProgId, hijackProgIds))
         {
-            _logService.Error($"修复失败: {item.Extension}");
+            _logService.AssociationChanged(
+                item.Extension,
+                item.CurrentAppName,
+                item.TargetAppName);
+
             return new FixResult
             {
                 Extension = item.Extension,
-                Status = FixStatus.Failed,
-                Message = "修复失败，请确认以管理员身份运行"
+                Status = FixStatus.Success,
+                Message = $"已修复为 {item.TargetAppName}"
             };
         }
 
-        _logService.AssociationChanged(
-            item.Extension,
-            item.CurrentAppName,
-            item.TargetAppName);
-
+        _logService.Error($"修复失败: {item.Extension}");
         return new FixResult
         {
             Extension = item.Extension,
-            Status = FixStatus.Success,
-            Message = $"已修复为 {item.TargetAppName}"
+            Status = FixStatus.Failed,
+            Message = "修复失败，请确认以管理员身份运行"
         };
     }
 
