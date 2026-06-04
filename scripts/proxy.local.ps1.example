@@ -1,0 +1,5 @@
+# 复制为 proxy.local.ps1 后可覆盖默认代理端口（proxy.local.ps1 不会被提交）
+
+$Script:ProxyHost = "127.0.0.1"
+$Script:HttpPort = 10809
+$Script:SocksPort = 10808

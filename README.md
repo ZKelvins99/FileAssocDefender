@@ -53,6 +53,24 @@ dotnet run --project FileAssocDefender/FileAssocDefender.csproj
 | EXE | `artifacts/publish/win-x64/FileAssocDefender.exe` |
 | MSI | `artifacts/package/FileAssocDefender.msi` |
 
+## 代理（仅本项目）
+
+之前 push GitHub 时只是在**单次命令里临时**设置了代理，**没有**写入 Windows 系统或用户环境变量。
+
+在本仓库内需要访问外网（NuGet、GitHub 等）时，任选其一：
+
+```powershell
+# 方式 1：手动启用（仅当前 PowerShell 窗口）
+. .\scripts\proxy.ps1
+
+# 方式 2：构建脚本已自动加载代理
+.\scripts\build.ps1 -Target All
+```
+
+- 默认：HTTP `127.0.0.1:10809`，SOCKS `127.0.0.1:10808`
+- 自定义端口：复制 `scripts/proxy.local.ps1.example` → `scripts/proxy.local.ps1`
+- 在 Cursor/VS Code 打开本项目时，`.vscode/settings.json` 也会给**本项目终端**注入相同代理变量
+
 ## 权限说明
 
 应用需要**管理员权限**运行（`app.manifest` 已配置 UAC 提权），以便修改文件关联注册表。

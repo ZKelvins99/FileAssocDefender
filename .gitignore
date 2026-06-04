@@ -71,7 +71,8 @@ Desktop.ini
 
 # --- IDE ---
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
 *.swp
 *.swo
 *~
@@ -85,6 +86,8 @@ Desktop.ini
 .env
 .env.local
 *.private.config
+
+scripts/proxy.local.ps1
 
 # --- Temp files ---
 *.tmp

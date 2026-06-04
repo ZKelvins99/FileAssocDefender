@@ -10,6 +10,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# 本项目脚本自动启用代理（仅当前 PowerShell 进程，不影响系统环境变量）
+. (Join-Path $PSScriptRoot "proxy.ps1")
+
 $Root = Split-Path -Parent $PSScriptRoot
 $Artifacts = Join-Path $Root "artifacts"
 $PublishDir = Join-Path $Artifacts "publish\$Runtime"
