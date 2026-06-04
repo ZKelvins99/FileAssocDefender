@@ -3,6 +3,7 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:views="clr-namespace:FileAssocDefender.Views"
+                 xmlns:converters="clr-namespace:FileAssocDefender.Converters"
                  Title="FileAssocDefender"
                  Width="1100"
                  Height="760"
@@ -11,6 +12,11 @@
                  WindowStartupLocation="CenterScreen"
                  ExtendsContentIntoTitleBar="True"
                  WindowBackdropType="Mica">
+    <ui:FluentWindow.Resources>
+        <converters:PageIndexToVisibilityConverter x:Key="PageVisibility" />
+        <BooleanToVisibilityConverter x:Key="BoolVisibility" />
+    </ui:FluentWindow.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -36,44 +42,17 @@
         </ui:NavigationView>
 
         <Grid Grid.Column="1">
-            <views:AssociationListView DataContext="{Binding AssociationList}">
-                <views:AssociationListView.Style>
-                    <Style TargetType="views:AssociationListView">
-                        <Setter Property="Visibility" Value="Collapsed" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedPageIndex}" Value="0">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </views:AssociationListView.Style>
-            </views:AssociationListView>
-
-            <views:LogView DataContext="{Binding Log}">
-                <views:LogView.Style>
-                    <Style TargetType="views:LogView">
-                        <Setter Property="Visibility" Value="Collapsed" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedPageIndex}" Value="1">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </views:LogView.Style>
-            </views:LogView>
-
-            <views:SettingsView DataContext="{Binding Settings}">
-                <views:SettingsView.Style>
-                    <Style TargetType="views:SettingsView">
-                        <Setter Property="Visibility" Value="Collapsed" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedPageIndex}" Value="2">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </views:SettingsView.Style>
-            </views:SettingsView>
+            <views:AssociationListView DataContext="{Binding AssociationList}"
+                                       Visibility="{Binding SelectedPageIndex, Converter={StaticResource PageVisibility}, ConverterParameter=0}" />
+            <views:LogView DataContext="{Binding Log}"
+                           Visibility="{Binding SelectedPageIndex, Converter={StaticResource PageVisibility}, ConverterParameter=1}" />
+            <views:SettingsView DataContext="{Binding Settings}"
+                                Visibility="{Binding SelectedPageIndex, Converter={StaticResource PageVisibility}, ConverterParameter=2}" />
         </Grid>
+
+        <views:DetailDrawer Grid.ColumnSpan="2"
+                            Panel.ZIndex="100"
+                            DataContext="{Binding DetailDrawer}"
+                            Visibility="{Binding IsOpen, Converter={StaticResource BoolVisibility}}" />
     </Grid>
 </ui:FluentWindow>

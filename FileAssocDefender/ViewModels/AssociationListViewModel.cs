@@ -11,15 +11,18 @@ public partial class AssociationListViewModel : ObservableObject
     private readonly AssociationScanner _scanner;
     private readonly AssociationFixer _fixer;
     private readonly LogService _logService;
+    private readonly DetailDrawerViewModel _detailDrawer;
 
     public AssociationListViewModel(
         AssociationScanner scanner,
         AssociationFixer fixer,
-        LogService logService)
+        LogService logService,
+        DetailDrawerViewModel detailDrawer)
     {
         _scanner = scanner;
         _fixer = fixer;
         _logService = logService;
+        _detailDrawer = detailDrawer;
         Items = new ObservableCollection<AssociationCardViewModel>();
     }
 
@@ -55,7 +58,7 @@ public partial class AssociationListViewModel : ObservableObject
             Items.Clear();
             foreach (var item in results)
             {
-                Items.Add(new AssociationCardViewModel(item, FixItemAsync));
+                Items.Add(new AssociationCardViewModel(item, FixItemAsync, ShowDetail));
             }
 
             TotalCount = results.Count;
@@ -100,6 +103,8 @@ public partial class AssociationListViewModel : ObservableObject
         await Task.Run(() => _fixer.Fix(item));
         await RefreshAsync();
     }
+
+    private void ShowDetail(AssociationInfo item) => _detailDrawer.Show(item);
 
     partial void OnHasHijackedItemsChanged(bool value) => FixAllCommand.NotifyCanExecuteChanged();
 }

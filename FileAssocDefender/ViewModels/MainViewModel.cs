@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FileAssocDefender.Models;
 using FileAssocDefender.Services;
 
 namespace FileAssocDefender.ViewModels;
@@ -13,17 +12,20 @@ public partial class MainViewModel : ObservableObject
         Guardian guardian,
         AssociationListViewModel associationListViewModel,
         LogViewModel logViewModel,
-        SettingsViewModel settingsViewModel)
+        SettingsViewModel settingsViewModel,
+        DetailDrawerViewModel detailDrawerViewModel)
     {
         _guardian = guardian;
         AssociationList = associationListViewModel;
         Log = logViewModel;
         Settings = settingsViewModel;
+        DetailDrawer = detailDrawerViewModel;
     }
 
     public AssociationListViewModel AssociationList { get; }
     public LogViewModel Log { get; }
     public SettingsViewModel Settings { get; }
+    public DetailDrawerViewModel DetailDrawer { get; }
 
     [ObservableProperty]
     private int _selectedPageIndex;

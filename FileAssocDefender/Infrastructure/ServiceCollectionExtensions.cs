@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<AssociationFixer>();
         services.AddSingleton<Guardian>();
 
+        services.AddSingleton<DetailDrawerViewModel>();
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<AssociationListViewModel>();
         services.AddSingleton<LogViewModel>();

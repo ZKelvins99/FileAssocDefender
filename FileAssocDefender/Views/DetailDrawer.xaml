@@ -1,0 +1,46 @@
+<UserControl x:Class="FileAssocDefender.Views.DetailDrawer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Background="#80000000" MouseDown="OnOverlayMouseDown">
+        <Border HorizontalAlignment="Right"
+                Width="420"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                Padding="24"
+                MouseDown="OnDrawerMouseDown">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Text="{Binding Title}"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,16" />
+
+                    <TextBlock Text="当前 ProgID" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding CurrentProgId}" Margin="0,0,0,12" TextWrapping="Wrap" />
+
+                    <TextBlock Text="目标 ProgID" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding TargetProgId}" Margin="0,0,0,12" TextWrapping="Wrap" />
+
+                    <TextBlock Text="注册表层级" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding SourceLayer}" Margin="0,0,0,12" TextWrapping="Wrap" />
+
+                    <TextBlock Text="Command 行" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding CommandLine}" Margin="0,0,0,12" TextWrapping="Wrap" />
+
+                    <TextBlock Text="OpenWithProgids" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding OpenWithProgIds}" Margin="0,0,0,16" TextWrapping="Wrap" />
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="复制诊断信息"
+                                Command="{Binding CopyDiagnosticCommand}"
+                                Padding="12,6"
+                                Margin="0,0,8,0" />
+                        <Button Content="关闭"
+                                Command="{Binding CloseCommand}"
+                                Padding="12,6" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

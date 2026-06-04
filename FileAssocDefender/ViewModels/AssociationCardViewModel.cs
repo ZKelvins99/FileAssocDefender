@@ -7,11 +7,16 @@ namespace FileAssocDefender.ViewModels;
 public partial class AssociationCardViewModel : ObservableObject
 {
     private readonly Func<AssociationInfo, Task> _fixAction;
+    private readonly Action<AssociationInfo> _showDetailAction;
 
-    public AssociationCardViewModel(AssociationInfo model, Func<AssociationInfo, Task> fixAction)
+    public AssociationCardViewModel(
+        AssociationInfo model,
+        Func<AssociationInfo, Task> fixAction,
+        Action<AssociationInfo> showDetailAction)
     {
         Model = model;
         _fixAction = fixAction;
+        _showDetailAction = showDetailAction;
     }
 
     public AssociationInfo Model { get; private set; }
@@ -36,6 +41,12 @@ public partial class AssociationCardViewModel : ObservableObject
     private async Task FixAsync()
     {
         await _fixAction(Model);
+    }
+
+    [RelayCommand]
+    private void ShowDetail()
+    {
+        _showDetailAction(Model);
     }
 
     public void Update(AssociationInfo model)
