@@ -16,6 +16,9 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        // 引导页关闭时主窗口尚未 Show，须避免 OnLastWindowClose 导致进程直接退出
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
         ApplicationThemeManager.ApplySystemTheme();
 
         var serviceCollection = new ServiceCollection();
@@ -29,14 +32,15 @@ public partial class App : Application
 
         if (!appSettings.Settings.HasCompletedWelcome)
         {
+            var viewModel = Services.GetRequiredService<WelcomeViewModel>();
             var welcome = new WelcomeWindow
             {
-                DataContext = Services.GetRequiredService<WelcomeViewModel>(),
-                Owner = null
+                DataContext = viewModel
             };
 
-            var accepted = welcome.ShowDialog() == true;
-            if (!accepted)
+            welcome.ShowDialog();
+
+            if (!viewModel.DialogResult)
             {
                 Shutdown();
                 return;
@@ -54,6 +58,7 @@ public partial class App : Application
         };
 
         Current.MainWindow = mainWindow;
+        Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
         mainWindow.Show();
 
         if (mainWindow.DataContext is MainViewModel viewModel)

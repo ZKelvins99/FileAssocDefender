@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<OfficeDetector>();
         services.AddSingleton<PresetStore>();
         services.AddSingleton<AssociationApi>();
+        services.AddSingleton<AssociationBackupStore>();
         services.AddSingleton<LogService>();
         services.AddSingleton<AssociationScanner>();
         services.AddSingleton<AssociationFixer>();

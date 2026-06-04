@@ -8,18 +8,25 @@ public partial class WelcomeWindow : FluentWindow
     public WelcomeWindow()
     {
         InitializeComponent();
-        Loaded += OnLoaded;
+        DataContextChanged += OnDataContextChanged;
     }
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
-        if (DataContext is ViewModels.WelcomeViewModel viewModel)
+        if (e.OldValue is ViewModels.WelcomeViewModel oldVm)
         {
-            viewModel.CloseRequested += (_, result) =>
-            {
-                DialogResult = result;
-                Close();
-            };
+            oldVm.CloseRequested -= OnCloseRequested;
         }
+
+        if (e.NewValue is ViewModels.WelcomeViewModel newVm)
+        {
+            newVm.CloseRequested += OnCloseRequested;
+        }
+    }
+
+    private void OnCloseRequested(object? sender, bool result)
+    {
+        DialogResult = result;
+        Close();
     }
 }

@@ -18,41 +18,61 @@
     </ui:FluentWindow.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <ui:NavigationView Grid.Column="0"
-                           Width="220"
-                           PaneDisplayMode="Left"
-                           IsBackButtonVisible="Collapsed"
-                           IsPaneToggleVisible="False">
-            <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="关联总览"
-                                       Icon="{ui:SymbolIcon Home24}"
-                                       Command="{Binding NavigateToOverviewCommand}" />
-                <ui:NavigationViewItem Content="日志"
-                                       Icon="{ui:SymbolIcon DocumentBulletList24}"
-                                       Command="{Binding NavigateToLogsCommand}" />
-                <ui:NavigationViewItem Content="设置"
-                                       Icon="{ui:SymbolIcon Settings24}"
-                                       Command="{Binding NavigateToSettingsCommand}" />
-            </ui:NavigationView.MenuItems>
-        </ui:NavigationView>
+        <ui:TitleBar Grid.Row="0"
+                     Title="FileAssocDefender"
+                     ShowClose="True"
+                     ShowMaximize="True"
+                     ShowMinimize="True" />
 
-        <Grid Grid.Column="1">
-            <views:AssociationListView DataContext="{Binding AssociationList}"
-                                       Visibility="{Binding SelectedPageIndex, Converter={StaticResource PageVisibility}, ConverterParameter=0}" />
-            <views:LogView DataContext="{Binding Log}"
-                           Visibility="{Binding SelectedPageIndex, Converter={StaticResource PageVisibility}, ConverterParameter=1}" />
-            <views:SettingsView DataContext="{Binding Settings}"
-                                Visibility="{Binding SelectedPageIndex, Converter={StaticResource PageVisibility}, ConverterParameter=2}" />
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ui:NavigationView Grid.Column="0"
+                               OpenPaneLength="220"
+                               PaneDisplayMode="Left"
+                               IsBackButtonVisible="Collapsed"
+                               IsPaneToggleVisible="False">
+                <ui:NavigationView.MenuItems>
+                    <ui:NavigationViewItem Content="关联总览"
+                                           Icon="{ui:SymbolIcon Home24}"
+                                           Command="{Binding NavigateToOverviewCommand}" />
+                    <ui:NavigationViewItem Content="日志"
+                                           Icon="{ui:SymbolIcon DocumentBulletList24}"
+                                           Command="{Binding NavigateToLogsCommand}" />
+                    <ui:NavigationViewItem Content="设置"
+                                           Icon="{ui:SymbolIcon Settings24}"
+                                           Command="{Binding NavigateToSettingsCommand}" />
+                </ui:NavigationView.MenuItems>
+            </ui:NavigationView>
+
+            <!-- 绑定 SelectedPageIndex 的容器继承 MainViewModel，避免子页 DataContext 覆盖导致三页叠在一起 -->
+            <Grid Grid.Column="1">
+                <Grid Visibility="{Binding SelectedPageIndex, Converter={StaticResource PageVisibility}, ConverterParameter=0}">
+                    <views:AssociationListView DataContext="{Binding AssociationList}" />
+                </Grid>
+
+                <Grid Visibility="{Binding SelectedPageIndex, Converter={StaticResource PageVisibility}, ConverterParameter=1}">
+                    <views:LogView DataContext="{Binding Log}" />
+                </Grid>
+
+                <Grid Visibility="{Binding SelectedPageIndex, Converter={StaticResource PageVisibility}, ConverterParameter=2}">
+                    <views:SettingsView DataContext="{Binding Settings}" />
+                </Grid>
+            </Grid>
         </Grid>
 
-        <views:DetailDrawer Grid.ColumnSpan="2"
+        <views:DetailDrawer Grid.RowSpan="2"
                             Panel.ZIndex="100"
                             DataContext="{Binding DetailDrawer}"
-                            Visibility="{Binding IsOpen, Converter={StaticResource BoolVisibility}}" />
+                            Visibility="{Binding IsOpen, Converter={StaticResource BoolVisibility}}"
+                            IsHitTestVisible="{Binding IsOpen}" />
     </Grid>
 </ui:FluentWindow>

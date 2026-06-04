@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
 using FileAssocDefender.Models;
@@ -174,21 +175,61 @@ public sealed class RegistryHelper
 
     public bool TryRepairViaRegistry(string extension, string progId, IEnumerable<string> progIdsToRemove)
     {
-        var normalized = NormalizeExtension(extension);
-        foreach (var hijackProgId in progIdsToRemove)
-        {
-            RemoveOpenWithProgId(normalized, hijackProgId);
-        }
-
-        TryClearUserChoice(normalized);
-        var success = SetHkcuDefault(normalized, progId);
-        if (success)
-        {
-            InvalidateCache();
-        }
-
-        return success;
+        // 已弃用：删除 UserChoice 会导致 Windows 显示「空」默认应用。
+        // 保留方法签名供测试/兼容，不再执行破坏性写入。
+        _ = extension;
+        _ = progId;
+        _ = progIdsToRemove;
+        return false;
     }
+
+    public bool IsAssociationConfigured(string extension, string expectedProgId)
+    {
+        var raw = GetAssociation(extension);
+        if (string.IsNullOrWhiteSpace(raw.ProgId))
+        {
+            return false;
+        }
+
+        if (!string.Equals(raw.ProgId, expectedProgId, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return !string.IsNullOrWhiteSpace(raw.ExePath) && File.Exists(raw.ExePath);
+    }
+
+    public string FindProgIdForExe(string exePath)
+    {
+        if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath))
+        {
+            return string.Empty;
+        }
+
+        var fullPath = Path.GetFullPath(exePath);
+        foreach (var progId in KnownOfficeProgIds)
+        {
+            var command = ResolveCommand(progId);
+            var resolved = ResolveExePath(command);
+            if (!string.IsNullOrWhiteSpace(resolved)
+                && string.Equals(Path.GetFullPath(resolved), fullPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return progId;
+            }
+        }
+
+        return string.Empty;
+    }
+
+    private static readonly string[] KnownOfficeProgIds =
+    [
+        "Word.Document.12",
+        "Word.Document.8",
+        "Excel.Sheet.12",
+        "Excel.Sheet.8",
+        "PowerPoint.Show.12",
+        "PowerPoint.Show.8"
+    ];
 
     private AssociationRaw BuildRaw(string extension, string progId, AssociationSource source)
     {

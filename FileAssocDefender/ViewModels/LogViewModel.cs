@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FileAssocDefender.Models;
@@ -27,10 +28,13 @@ public partial class LogViewModel : ObservableObject
 
     private void OnEntriesChanged()
     {
-        Entries.Clear();
-        foreach (var entry in _logService.Entries)
+        Application.Current.Dispatcher.Invoke(() =>
         {
-            Entries.Add(entry);
-        }
+            Entries.Clear();
+            foreach (var entry in _logService.Entries)
+            {
+                Entries.Add(entry);
+            }
+        });
     }
 }

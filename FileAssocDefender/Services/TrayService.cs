@@ -1,5 +1,8 @@
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using FileAssocDefender.Models;
 using FileAssocDefender.ViewModels;
 using Hardcodet.Wpf.TaskbarNotification;
@@ -21,11 +24,20 @@ public sealed class TrayService : IDisposable
 
     public void Initialize(Window mainWindow)
     {
+        var menu = CreateContextMenu(mainWindow);
+
         _icon = new TaskbarIcon
         {
             ToolTipText = "FileAssocDefender",
-            ContextMenu = CreateContextMenu(mainWindow),
+            ContextMenu = menu,
             Visibility = Visibility.Visible
+        };
+
+        _icon.PreviewTrayContextMenuOpen += (_, _) =>
+        {
+            Application.Current.Dispatcher.BeginInvoke(
+                () => AlignContextMenuToCursor(menu),
+                System.Windows.Threading.DispatcherPriority.Send);
         };
 
         SetNormalIcon();
@@ -60,8 +72,54 @@ public sealed class TrayService : IDisposable
         };
         menu.Items.Add(exitItem);
 
+        // Opened 作为兜底：库在 WM_CONTEXTMENU 上可能给出错误坐标
+        menu.Opened += (_, _) => AlignContextMenuToCursor(menu);
+
         return menu;
     }
+
+    /// <summary>
+    /// Hardcodet 从 WM_CONTEXTMENU 的 wParam 取坐标，在 Win10/11 上常错误，导致菜单出现在屏幕右下角。
+    /// </summary>
+    private static void AlignContextMenuToCursor(ContextMenu menu)
+    {
+        if (!GetCursorPos(out var cursor))
+        {
+            return;
+        }
+
+        var (scaleX, scaleY) = GetDpiScale();
+        menu.Placement = PlacementMode.AbsolutePoint;
+        menu.HorizontalOffset = cursor.X / scaleX;
+        menu.VerticalOffset = cursor.Y / scaleY;
+    }
+
+    private static (double X, double Y) GetDpiScale()
+    {
+        var window = Application.Current.MainWindow;
+        if (window is not null)
+        {
+            var source = PresentationSource.FromVisual(window);
+            if (source?.CompositionTarget is not null)
+            {
+                var matrix = source.CompositionTarget.TransformToDevice;
+                return (matrix.M11, matrix.M22);
+            }
+        }
+
+        using var graphics = Graphics.FromHwnd(IntPtr.Zero);
+        return (graphics.DpiX / 96.0, graphics.DpiY / 96.0);
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativePoint
+    {
+        public int X;
+        public int Y;
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool GetCursorPos(out NativePoint lpPoint);
 
     private void OnHijackDetected(AssociationInfo info)
     {

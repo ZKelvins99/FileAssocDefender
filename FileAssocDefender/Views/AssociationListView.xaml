@@ -17,14 +17,13 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0">
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
                     <TextBlock Text="文件关联总览"
                                FontSize="20"
                                FontWeight="SemiBold" />
-                    <TextBlock Margin="0,4,0,0" Opacity="0.75">
+                    <TextBlock Margin="0,4,0,0" Opacity="0.75" TextWrapping="Wrap">
                         <Run Text="正常 " />
                         <Run Text="{Binding HealthyCount}" FontWeight="SemiBold" />
                         <Run Text=" / " />
@@ -34,17 +33,21 @@
                     </TextBlock>
                 </StackPanel>
 
-                <Button Grid.Column="1"
-                        Content="立即刷新"
-                        Command="{Binding RefreshCommand}"
-                        Padding="16,8"
-                        Margin="0,0,8,0" />
+                <StackPanel Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <Button Content="立即刷新"
+                            Command="{Binding RefreshCommand}"
+                            Padding="16,8"
+                            Margin="0,0,8,0" />
 
-                <Button Grid.Column="2"
-                        Content="一键全部修复为 Office"
-                        Command="{Binding FixAllCommand}"
-                        Padding="16,8"
-                        FontWeight="SemiBold" />
+                    <Button Content="一键全部修复"
+                            Command="{Binding FixAllCommand}"
+                            Padding="16,8"
+                            FontWeight="SemiBold" />
+                </StackPanel>
             </Grid>
         </Border>
 

@@ -1,11 +1,18 @@
+using System.IO;
 using System.Runtime.InteropServices;
 using FileAssocDefender.Services.Interop;
-using Microsoft.Win32;
 
 namespace FileAssocDefender.Services;
 
 public sealed class AssociationApi
 {
+    private readonly RegistryHelper _registryHelper;
+
+    public AssociationApi(RegistryHelper registryHelper)
+    {
+        _registryHelper = registryHelper;
+    }
+
     public bool TrySetDefault(string extension, string progId)
     {
         if (string.IsNullOrWhiteSpace(extension) || string.IsNullOrWhiteSpace(progId))
@@ -19,7 +26,8 @@ public sealed class AssociationApi
         {
             var registration = (IApplicationAssociationRegistration)new ApplicationAssociationRegistration();
             registration.SetAppAsDefault(progId, normalized, AssociationType.FileExtension);
-            return VerifyDefault(normalized, progId);
+            _registryHelper.InvalidateCache();
+            return _registryHelper.IsAssociationConfigured(normalized, progId);
         }
         catch (COMException)
         {
@@ -31,10 +39,14 @@ public sealed class AssociationApi
         }
     }
 
-    private static bool VerifyDefault(string extension, string expectedProgId)
+    public bool TrySetDefaultByExe(string extension, string exePath)
     {
-        var helper = new RegistryHelper();
-        var actual = helper.GetAssociation(extension);
-        return string.Equals(actual.ProgId, expectedProgId, StringComparison.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath))
+        {
+            return false;
+        }
+
+        var progId = _registryHelper.FindProgIdForExe(exePath);
+        return !string.IsNullOrWhiteSpace(progId) && TrySetDefault(extension, progId);
     }
 }
