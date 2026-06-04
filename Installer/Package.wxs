@@ -1,0 +1,26 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <Package Name="FileAssocDefender"
+           Manufacturer="FileAssocDefender"
+           Version="1.0.0.0"
+           UpgradeCode="8F3D2A1B-4C5E-6F70-8912-3456789ABCDE"
+           Scope="perMachine"
+           Codepage="65001">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="MainFeature" Title="FileAssocDefender" Level="1">
+      <ComponentGroupRef Id="PublishedApp" />
+    </Feature>
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="FileAssocDefender" />
+    </StandardDirectory>
+
+    <ui:WixUI Id="WixUI_Minimal" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+  </Package>
+</Wix>

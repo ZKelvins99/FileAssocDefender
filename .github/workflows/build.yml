@@ -1,0 +1,30 @@
+name: build
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore FileAssocDefender.slnx
+
+      - name: Build
+        run: dotnet build FileAssocDefender/FileAssocDefender.csproj FileAssocDefender.Tests/FileAssocDefender.Tests.csproj -c Release --no-restore
+
+      - name: Test
+        run: dotnet test FileAssocDefender.Tests/FileAssocDefender.Tests.csproj -c Release --no-build
+
+      - name: Publish EXE
+        run: dotnet publish FileAssocDefender/FileAssocDefender.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o artifacts/publish/win-x64

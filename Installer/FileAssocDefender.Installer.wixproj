@@ -1,0 +1,31 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+    <OutputName>FileAssocDefender</OutputName>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <PublishDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\artifacts\publish\win-x64\'))</PublishDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Heat" Version="5.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <HarvestDirectory Include="$(PublishDir)" Condition="Exists('$(PublishDir)')">
+      <ComponentGroupName>PublishedApp</ComponentGroupName>
+      <DirectoryRefId>INSTALLFOLDER</DirectoryRefId>
+      <SuppressRootDirectory>true</SuppressRootDirectory>
+      <SuppressRegistry>true</SuppressRegistry>
+    </HarvestDirectory>
+    <BindPath Include="$(PublishDir)" Condition="Exists('$(PublishDir)')" />
+  </ItemGroup>
+
+  <Target Name="EnsurePublishedApp" BeforeTargets="Build">
+    <Error Condition="!Exists('$(PublishDir)FileAssocDefender.exe')"
+           Text="MSI 打包需要先发布 EXE：运行 scripts/build.ps1 -Target Publish" />
+  </Target>
+
+</Project>
