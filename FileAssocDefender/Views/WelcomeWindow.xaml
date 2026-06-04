@@ -1,0 +1,66 @@
+<ui:FluentWindow x:Class="FileAssocDefender.Views.WelcomeWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 Title="欢迎使用 FileAssocDefender"
+                 Width="560"
+                 Height="480"
+                 WindowStartupLocation="CenterScreen"
+                 ResizeMode="NoResize"
+                 WindowBackdropType="Mica">
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="FileAssocDefender"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,8" />
+
+        <TextBlock Grid.Row="1"
+                   Text="守护 Office 文件默认打开方式，识别 WPS 等劫持并一键修复。"
+                   TextWrapping="Wrap"
+                   Opacity="0.85"
+                   Margin="0,0,0,20" />
+
+        <Border Grid.Row="2"
+                Background="#1FFFFFFF"
+                CornerRadius="8"
+                Padding="16"
+                Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="Office 检测结果"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,8" />
+                <TextBlock Text="{Binding OfficeStatus}"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,16" />
+
+                <TextBlock Text="权限说明"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,8" />
+                <TextBlock TextWrapping="Wrap"
+                           Opacity="0.9"
+                           Text="本程序需要管理员权限运行，以便修改系统文件关联。启动时若出现 UAC 提示，请选择「是」。" />
+            </StackPanel>
+        </Border>
+
+        <CheckBox Grid.Row="3"
+                  Content="下次启动不再显示此引导"
+                  IsChecked="{Binding SkipNextTime}"
+                  Margin="0,0,0,16" />
+
+        <Button Grid.Row="4"
+                Content="开始使用"
+                HorizontalAlignment="Right"
+                Padding="24,10"
+                FontWeight="SemiBold"
+                Command="{Binding ContinueCommand}" />
+    </Grid>
+</ui:FluentWindow>

@@ -8,6 +8,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddFileAssocDefenderServices(this IServiceCollection services)
     {
+        services.AddSingleton<AppSettingsService>();
         services.AddSingleton<RegistryHelper>();
         services.AddSingleton<IconResolver>();
         services.AddSingleton<OfficeDetector>();
@@ -19,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<Guardian>();
         services.AddSingleton<TrayService>();
 
+        services.AddSingleton<WelcomeViewModel>();
         services.AddSingleton<DetailDrawerViewModel>();
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<AssociationListViewModel>();
